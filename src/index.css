@@ -49,6 +49,22 @@ h1 {
   color: #556276;
 }
 
+.connection-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #dbe4ef;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+}
+
+.connection-card p {
+  margin: 0;
+}
+
 .command-form {
   margin-top: 2rem;
 }
@@ -103,13 +119,24 @@ button {
   background: #1d4ed8;
 }
 
+.connect-button,
+.approve-button {
+  padding: 0.65rem 0.9rem;
+  background: #0f766e;
+  color: white;
+}
+
+.approve-button {
+  background: #b45309;
+}
+
 button:disabled {
   cursor: wait;
   opacity: 0.7;
 }
 
 .result {
-  min-height: 6rem;
+  min-height: 8rem;
   margin-top: 1.5rem;
   padding: 1rem;
   border: 1px solid #dbe4ef;
@@ -127,8 +154,49 @@ button:disabled {
   color: #64748b;
 }
 
-.action-details p {
+.agent-flow {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.flow-step {
+  padding: 0.875rem;
+  border-left: 3px solid #93c5fd;
+  border-radius: 0 0.5rem 0.5rem 0;
+  background: white;
+}
+
+.flow-step p {
+  margin: 0.35rem 0;
+}
+
+.flow-label {
+  color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+pre {
   margin: 0.5rem 0;
+  padding: 0.75rem;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background: #172033;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.approval-note {
+  margin: 0;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: #fef3c7;
+  color: #78350f;
+  font-size: 0.875rem;
 }
 
 .error-message {
@@ -146,6 +214,11 @@ button:disabled {
 
 @media (max-width: 580px) {
   .command-row {
+    flex-direction: column;
+  }
+
+  .connection-card {
+    align-items: stretch;
     flex-direction: column;
   }
 

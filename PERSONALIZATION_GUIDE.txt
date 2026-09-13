@@ -1,0 +1,110 @@
+PERSONALIZATION GUIDE: BUILDING A PRIVATE COMMUNICATION-STYLE LAYER
+===================================================================
+
+Purpose
+-------
+This guide is a future, optional layer for making reply drafts sound more
+like you. It is separate from the agent core: the agent can select and run
+tools without any personal conversation history.
+
+Privacy rules before you begin
+------------------------------
+1. Keep all exported conversations in a local private folder outside Git.
+2. Never paste chat exports into a cloud LLM, a public repository, or a bug
+   report.
+3. Keep the original export unchanged. Work on a copy.
+4. Exclude private data from version control before adding any files:
+
+   data/private/
+   *.chat.txt
+   *.conversation.jsonl
+
+5. Start with one consenting contact or fictional examples while learning.
+6. Keep generated drafts review-only. The agent must never auto-send a
+   personalized message.
+
+Suggested learning stages
+-------------------------
+
+Stage 1: Understand the data shape
+  Learn what one message record needs:
+
+  {
+    "timestamp": "2026-09-13T10:30:00+05:30",
+    "contact_id": "rahul",
+    "direction": "outgoing",
+    "text": "I'll be there in 10 minutes.",
+    "message_type": "text"
+  }
+
+  Do not build embeddings or an LLM feature yet. First make a tiny, local,
+  manually-created JSONL file with 10-20 made-up examples and inspect it.
+
+Stage 2: Normalize exports locally
+  Write a small local-only import script later that converts a chat export to
+  records like the example above. Preserve the contact identifier, direction,
+  and timestamp when available. Do not mix every contact together.
+
+Stage 3: Build contact-specific examples
+  A reply to Rahul should retrieve only Rahul's examples. Start with a simple
+  folder layout:
+
+  data/private/
+    contacts/
+      rahul.jsonl
+      mom.jsonl
+
+  This is example storage, not model training. Changing these files does not
+  change Qwen's model weights.
+
+Stage 4: Add local retrieval (RAG)
+  RAG means: retrieve relevant examples, then give only those examples to the
+  model together with the current incoming message.
+
+  First use keyword search locally. Later add local embeddings:
+
+  text -> embedding vector -> similarity search -> top 3-5 examples
+
+  Embeddings are numeric representations of meaning. They help find an old
+  message that is semantically similar even if it uses different words.
+
+Stage 5: Add a draft-only tool
+  Create a tool such as draft_reply, not send_message. Its input should be:
+
+  - current incoming message
+  - selected contact id
+  - a few retrieved outgoing examples for that contact
+
+  Its output should be a proposed reply plus the example IDs it used. Always
+  show the draft and let yourself edit or reject it.
+
+Stage 6: Evaluate it deliberately
+  Keep a small local test set of situations and your preferred replies. Check:
+
+  - Does it sound like you?
+  - Does it use the right tone for this contact?
+  - Does it reveal unrelated details?
+  - Does it invent facts?
+  - Would you actually send it?
+
+Stage 7: Consider fine-tuning only much later
+  Fine-tuning changes a model using training data. It is harder to reverse,
+  requires more data and evaluation, and is not needed to begin. Local RAG is
+  more private, easier to inspect, and easier to update when your style changes.
+
+Useful vocabulary
+-----------------
+- Existing LLM: Qwen already trained on general language. We call it locally.
+- Prompt: instructions plus the current task we send to Qwen.
+- Examples: your saved past outgoing messages.
+- Embeddings: vectors used to search for similar examples.
+- RAG: retrieve relevant examples before prompting the LLM.
+- Fine-tuning: retraining model weights; postpone this.
+- Local model: runs on your computer through Ollama.
+
+Important design boundary for this project
+------------------------------------------
+The future personalization layer should provide examples to a draft_reply
+tool. It should not give the agent unrestricted access to your entire chat
+archive, and it should not be combined with direct message sending. This keeps
+retrieval, drafting, approval, and sending independently inspectable.
